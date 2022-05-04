@@ -20,6 +20,7 @@ for i in contours:
     # if cv2.contourArea(i)>506 and cv2.contourArea(i)<510:   # Calcula el área y elimina las áreas pequeñas
     if cv2.contourArea(i) == 58:  # Calcula el área y elimina las áreas pequeñas
         contours1.append(i)
+        print('ver area: ', ver_area)
 # Encuentra el centro  y dibuja el número en el punto de coordenadas del centro
 for i, j in zip(contours1, range(len(contours1))):
     M = cv2.moments(i)
@@ -49,11 +50,15 @@ for i, j in zip(contours1, range(len(contours1))):
 
 def ordenar_puntos(puntos):
     n_puntos = np.concatenate([puntos[0], puntos[1], puntos[2], puntos[3]]).tolist()
+
     y_order = sorted(n_puntos, key=lambda n_puntos: n_puntos[1])
+
     x1_order = y_order[:2]
     x1_order = sorted(x1_order, key=lambda x1_order: x1_order[0])
+
     x2_order = y_order[2:4]
     x2_order = sorted(x2_order, key=lambda x2_order: x2_order[0])
+
     return [x1_order[0], x1_order[1], x2_order[0], x2_order[1]]
 
 
@@ -68,11 +73,12 @@ for c in cnts:
     approx = cv2.approxPolyDP(c, epsilon, True)
     area2 = cv2.contourArea(c)
     # print('area2', area2)
-    if area2 > 114891:
 
-        # print('x:',x, 'y:', y,'w:', w, 'h:', h)
+    if area2 > 124891:
+
         if len(approx) == 4:
             cv2.drawContours(draw1, [approx], 0, (0, 0, 0), 2)
+
             puntos = ordenar_puntos(approx)
 
         p1 = cv2.circle(draw1, tuple(puntos[0]), 7, (255, 0, 0), 2)
@@ -80,23 +86,9 @@ for c in cnts:
         p3 = cv2.circle(draw1, tuple(puntos[2]), 7, (0, 0, 255), 2)
         p4 = cv2.circle(draw1, tuple(puntos[3]), 7, (255, 255, 0), 2)
         print(tuple(puntos[0]),puntos[1],puntos[2],puntos[3])
-        x, y, w, h = cv2.boundingRect(c)
-        print(x, y, w, h)
-
-        if  x != 0 and y != 0:
-            recorte = draw1[y:y+h, x:x+w]# y:y+h, x:x+w
-
-            # print(len(str(x)))
-            cv2.imshow("recorte", recorte)
-            # recorte = draw1[692:895, 665:1289] #y:y+h, x:x+w
-
 
 # Mostrar imágenes
-
-
 imgResize = cv2.resize(draw1, (1260, 860))
-
 cv2.imshow("6 draw", imgResize)
-# cv2.imshow("recorte", recorte)
 cv2.waitKey()
 cv2.destroyWindow()
