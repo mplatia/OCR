@@ -62,41 +62,54 @@ canny = cv2.Canny(gray1, 10, 150)
 canny = cv2.dilate(canny, None, iterations=1)
 
 cnts, hierarchy = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+nombre = []
+imageAux = draw1.copy()
 for c in cnts:
     epsilon = 0.01 * cv2.arcLength(c, True)
     approx = cv2.approxPolyDP(c, epsilon, True)
     area2 = cv2.contourArea(c)
     # print('area2', area2)
-    if area2 > 114891:
+    nombre = [cv2.boundingRect(c)]
+    # print(nombre)
 
-        # print('x:',x, 'y:', y,'w:', w, 'h:', h)
-        if len(approx) == 4:
-            cv2.drawContours(draw1, [approx], 0, (0, 0, 0), 2)
-            puntos = ordenar_puntos(approx)
 
-        p1 = cv2.circle(draw1, tuple(puntos[0]), 7, (255, 0, 0), 2)
-        p2 = cv2.circle(draw1, tuple(puntos[1]), 7, (0, 255, 0), 2)
-        p3 = cv2.circle(draw1, tuple(puntos[2]), 7, (0, 0, 255), 2)
-        p4 = cv2.circle(draw1, tuple(puntos[3]), 7, (255, 255, 0), 2)
-        print(tuple(puntos[0]),puntos[1],puntos[2],puntos[3])
-        x, y, w, h = cv2.boundingRect(c)
-        print(x, y, w, h)
 
-        if  x != 0 and y != 0:
-            recorte = draw1[y:y+h, x:x+w]# y:y+h, x:x+w
 
-            # print(len(str(x)))
-            cv2.imshow("recorte", recorte)
+    #recorte2 = draw1[nombre[:0]]
+
+    # print(len(str(x)))
+
+    #print(nombre[::1])
+    for x, y, w, h in nombre:
+
+        # if area2 > 114891:
+
+            # print('x:',x, 'y:', y,'w:', w, 'h:', h)
+            # if len(approx) == 4:
+                # cv2.drawContours(draw1, [approx], 0, (0, 0, 0), 2)
+                # puntos = ordenar_puntos(approx)
+
+            # p1 = cv2.circle(draw1, tuple(puntos[0]), 7, (255, 0, 0), 2)
+            # p2 = cv2.circle(draw1, tuple(puntos[1]), 7, (0, 255, 0), 2)
+            # p3 = cv2.circle(draw1, tuple(puntos[2]), 7, (0, 0, 255), 2)
+            # p4 = cv2.circle(draw1, tuple(puntos[3]), 7, (255, 255, 0), 2)
+            # # print(puntos[0],puntos[1],puntos[2],puntos[3])
+        if x != 0 and y!= 0:
+            rostro = imageAux[y:y + h, x:x + w]
+            imgResize = cv2.resize(draw1, (1260, 860))
+            cv2.imshow("6 draw", imgResize)
+            cv2.imshow("recorte", rostro)
+            print(x, y, w, h)
+            cv2.waitKey(0)
             # recorte = draw1[692:895, 665:1289] #y:y+h, x:x+w
 
 
 # Mostrar imágenes
 
 
-imgResize = cv2.resize(draw1, (1260, 860))
 
-cv2.imshow("6 draw", imgResize)
+
+
 # cv2.imshow("recorte", recorte)
 cv2.waitKey()
 cv2.destroyWindow()
