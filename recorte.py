@@ -1,7 +1,12 @@
 import cv2
 import numpy as np
+import pytesseract
+from pylibdmtx.pylibdmtx import decode
 
-img = cv2.imread(r'Imagenes/p11.jpeg', 1)  # Leer imagen
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
+
+img = cv2.imread(r'Imagenes/p11'
+                 r'.jpeg', 1)  # Leer imagen
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convierta la imagen en una imagen en escala de grises
 kernel = np.ones((4, 4), np.uint8)  # Kelner
 erosion = cv2.erode(gray, kernel, iterations=2)  # Expansión
@@ -13,6 +18,8 @@ contours, hirearchy = cv2.findContours(thresh1, cv2.RETR_TREE, cv2.CHAIN_APPROX_
 
 area = []
 contours1 = []
+
+#Detecta el punto y dibuja
 for i in contours:
     # area.append(cv2.contourArea(i))
     ver_area = cv2.contourArea(i)
@@ -45,58 +52,80 @@ for i, j in zip(contours1, range(len(contours1))):
     # print('Esta es la j: ', j, 'estas es la x: ', cX, 'esta es la y: ', cY)
 
 
-# contrar puntos
-
-def ordenar_puntos(puntos):
-    n_puntos = np.concatenate([puntos[0], puntos[1], puntos[2], puntos[3]]).tolist()
-    y_order = sorted(n_puntos, key=lambda n_puntos: n_puntos[1])
-    x1_order = y_order[:2]
-    x1_order = sorted(x1_order, key=lambda x1_order: x1_order[0])
-    x2_order = y_order[2:4]
-    x2_order = sorted(x2_order, key=lambda x2_order: x2_order[0])
-    return [x1_order[0], x1_order[1], x2_order[0], x2_order[1]]
-
-
+# Recorta Indicador
 gray1 = cv2.cvtColor(draw1, cv2.COLOR_BGR2GRAY)
 canny = cv2.Canny(gray1, 10, 150)
 canny = cv2.dilate(canny, None, iterations=1)
 
 cnts, hierarchy = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+Lista = []
+
+def dataMat(image, bgr):
+    global recorte
+    global code
+    # image = cv2.imread('Imagenes/p6.jpeg', cv2.IMREAD_UNCHANGED);
+    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    data = decode(gray_img)
+    # print(data)
+    for decodedObject in data:
+        points = decodedObject.rect
+        pts = np.array(points, np.int32)
+        pts = pts.reshape((-1, 1, 2))
+        # cv2.polylines(image, [pts], True, (0, 255, 0), 3)
+
+        cv2.putText(recorte, decodedObject.data.decode("utf-8") , (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1,bgr, 2)
+
+        # print("Barcode: {} ".format(decodedObject.data.decode("utf-8")))
+        for barcode in data:
+            # extract the bounding box location of the barcode and draw
+            # the bounding box surrounding the barcode on the image
+            x1, y1, w1, h1 = barcode.rect
+            cv2.rectangle(recorte, (x1, y1), (x1 + w1, y1 - h1), (0, 255, 0), 2)
+            # cv2.putText(recorte, str(barcode), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, bgr, 2)
+            cv2.imshow("recorte con OCR", recorte)
+            code = cv2.waitKey(0)
+            print(barcode)
+            # print(len(barcode))
+
+
 for c in cnts:
     epsilon = 0.01 * cv2.arcLength(c, True)
     approx = cv2.approxPolyDP(c, epsilon, True)
     area2 = cv2.contourArea(c)
-    # print('area2', area2)
-    if area2 > 114891:
 
-        # print('x:',x, 'y:', y,'w:', w, 'h:', h)
-        if len(approx) == 4:
-            cv2.drawContours(draw1, [approx], 0, (0, 0, 0), 2)
-            puntos = ordenar_puntos(approx)
+    x, y, w, h = cv2.boundingRect(c)
 
-        p1 = cv2.circle(draw1, tuple(puntos[0]), 7, (255, 0, 0), 2)
-        p2 = cv2.circle(draw1, tuple(puntos[1]), 7, (0, 255, 0), 2)
-        p3 = cv2.circle(draw1, tuple(puntos[2]), 7, (0, 0, 255), 2)
-        p4 = cv2.circle(draw1, tuple(puntos[3]), 7, (255, 255, 0), 2)
-        print(tuple(puntos[0]),puntos[1],puntos[2],puntos[3])
-        x, y, w, h = cv2.boundingRect(c)
+
+    if  x != 0 and y != 0:
         print(x, y, w, h)
+        recorte = draw1[y:y+h, x:x+w]# y:y+h, x:x+w
+        imgResize = cv2.resize(draw1, (1260, 860))
+        boxes = pytesseract.image_to_data(recorte)
+        for a, b in enumerate(boxes.splitlines()):
+            # print(b)
+            if a != 0:
+                b = b.split()
+                print(b)
+                # ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+                # msg = pylibdmtx.decode(thresh)
+                # print(msg)
 
-        if  x != 0 and y != 0:
-            recorte = draw1[y:y+h, x:x+w]# y:y+h, x:x+w
+                # if len(b)==12 and (b[11] == '202702' or b[11] == '820022' or  b[11] == '|T27-7YS' or b[11] == 'Integron®') :
+                if len(b) == 12:
+                    x, y, w, h = int(b[6]), int(b[7]), int(b[8]), int(b[9])
+                    cv2.putText(recorte, b[11], (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 50, 255), 2)
+                    cv2.rectangle(recorte , (x, y), (x + w, y + h), (50, 50, 255), 2)
+                    bgr = (0,255,0)
 
-            # print(len(str(x)))
-            cv2.imshow("recorte", recorte)
-            # recorte = draw1[692:895, 665:1289] #y:y+h, x:x+w
+                    #cv2.imshow("recorte con OCR", recorte)
+                    code = dataMat(recorte, bgr)
+                    #cv2.waitKey(0)
+
+
+
+                        # recorte = draw1[692:895, 665:1289] #y:y+h, x:x+w
 
 
 # Mostrar imágenes
-
-
-imgResize = cv2.resize(draw1, (1260, 860))
-
-cv2.imshow("6 draw", imgResize)
-# cv2.imshow("recorte", recorte)
-cv2.waitKey()
 cv2.destroyWindow()
