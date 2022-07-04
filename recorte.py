@@ -1,5 +1,9 @@
 import cv2
 import numpy as np
+import pytesseract
+from pylibdmtx.pylibdmtx import decode
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 
 img = cv2.imread(r'Imagenes/p11.jpeg', 1)  # Leer imagen
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convierta la imagen en una imagen en escala de grises
@@ -13,6 +17,8 @@ contours, hirearchy = cv2.findContours(thresh1, cv2.RETR_TREE, cv2.CHAIN_APPROX_
 
 area = []
 contours1 = []
+
+#Detecta el punto y dibuja
 for i in contours:
     # area.append(cv2.contourArea(i))
     ver_area = cv2.contourArea(i)
@@ -28,7 +34,8 @@ for i, j in zip(contours1, range(len(contours1))):
 
     # if cX == 1308 or cY == 1017:
     if cX == 1354 or cY == 950:
-        draw1 = cv2.putText(img, ('este es el punto' + str(j)), (cX, cY), 1, 1.5, (0, 0, 255), 2)
+        draw = cv2.drawContours(img, contours1, -1, (0, 0, 0), 2)
+        draw1 = cv2.putText(draw, ('este es el punto' + str(j)), (cX, cY), 1, 1.5, (0, 0, 255), 2)
 
         # l1v = cv2.line(img, (cX, 0), (cX, cY), (0, 0, 0), 4)
         # l1h = cv2.line(img, (0, cY), (cX, cY), (0, 0, 255), 4)
@@ -45,71 +52,17 @@ for i, j in zip(contours1, range(len(contours1))):
     # print('Esta es la j: ', j, 'estas es la x: ', cX, 'esta es la y: ', cY)
 
 
-# contrar puntos
-
-def ordenar_puntos(puntos):
-    n_puntos = np.concatenate([puntos[0], puntos[1], puntos[2], puntos[3]]).tolist()
-    y_order = sorted(n_puntos, key=lambda n_puntos: n_puntos[1])
-    x1_order = y_order[:2]
-    x1_order = sorted(x1_order, key=lambda x1_order: x1_order[0])
-    x2_order = y_order[2:4]
-    x2_order = sorted(x2_order, key=lambda x2_order: x2_order[0])
-    return [x1_order[0], x1_order[1], x2_order[0], x2_order[1]]
-
-
+# Recorta Indicador
 gray1 = cv2.cvtColor(draw1, cv2.COLOR_BGR2GRAY)
 canny = cv2.Canny(gray1, 10, 150)
 canny = cv2.dilate(canny, None, iterations=1)
 
 cnts, hierarchy = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-nombre = []
-imageAux = draw1.copy()
-for c in cnts:
-    epsilon = 0.01 * cv2.arcLength(c, True)
-    approx = cv2.approxPolyDP(c, epsilon, True)
-    area2 = cv2.contourArea(c)
-    # print('area2', area2)
-    nombre = [cv2.boundingRect(c)]
-    # print(nombre)
+
+
+        #cv2.waitKey(0)
 
 
 
 
-    #recorte2 = draw1[nombre[:0]]
-
-    # print(len(str(x)))
-
-    #print(nombre[::1])
-    for x, y, w, h in nombre:
-
-        # if area2 > 114891:
-
-            # print('x:',x, 'y:', y,'w:', w, 'h:', h)
-            # if len(approx) == 4:
-                # cv2.drawContours(draw1, [approx], 0, (0, 0, 0), 2)
-                # puntos = ordenar_puntos(approx)
-
-            # p1 = cv2.circle(draw1, tuple(puntos[0]), 7, (255, 0, 0), 2)
-            # p2 = cv2.circle(draw1, tuple(puntos[1]), 7, (0, 255, 0), 2)
-            # p3 = cv2.circle(draw1, tuple(puntos[2]), 7, (0, 0, 255), 2)
-            # p4 = cv2.circle(draw1, tuple(puntos[3]), 7, (255, 255, 0), 2)
-            # # print(puntos[0],puntos[1],puntos[2],puntos[3])
-        if x != 0 and y!= 0:
-            rostro = imageAux[y:y + h, x:x + w]
-            imgResize = cv2.resize(draw1, (1260, 860))
-            cv2.imshow("6 draw", imgResize)
-            cv2.imshow("recorte", rostro)
-            print(x, y, w, h)
-            cv2.waitKey(0)
-            # recorte = draw1[692:895, 665:1289] #y:y+h, x:x+w
-
-
-# Mostrar imágenes
-
-
-
-
-
-# cv2.imshow("recorte", recorte)
-cv2.waitKey()
 cv2.destroyWindow()

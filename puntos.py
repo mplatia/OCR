@@ -74,18 +74,20 @@ for c in cnts:
     area2 = cv2.contourArea(c)
     # print('area2', area2)
 
-    if area2 > 124891:
 
-        if len(approx) == 4:
-            cv2.drawContours(draw1, [approx], 0, (0, 0, 0), 2)
+    if len(approx) == 4:
+        cv2.drawContours(draw1, [approx], 0, (0, 0, 0), 2)
 
-            puntos = ordenar_puntos(approx)
+        puntos = ordenar_puntos(approx)
 
-        p1 = cv2.circle(draw1, tuple(puntos[0]), 7, (255, 0, 0), 2)
-        p2 = cv2.circle(draw1, tuple(puntos[1]), 7, (0, 255, 0), 2)
-        p3 = cv2.circle(draw1, tuple(puntos[2]), 7, (0, 0, 255), 2)
-        p4 = cv2.circle(draw1, tuple(puntos[3]), 7, (255, 255, 0), 2)
-        print(tuple(puntos[0]),puntos[1],puntos[2],puntos[3])
+    p1 = cv2.circle(draw1, tuple(puntos[0]), 7, (255, 0, 0), 2)
+    p2 = cv2.circle(draw1, tuple(puntos[1]), 7, (0, 255, 0), 2)
+    p3 = cv2.circle(draw1, tuple(puntos[2]), 7, (0, 0, 255), 2)
+    p4 = cv2.circle(draw1, tuple(puntos[3]), 7, (255, 255, 0), 2)
+    print(tuple(puntos[0]),puntos[1],puntos[2],puntos[3])
+    imgResize1 = cv2.resize(draw1, (1260, 860))
+    cv2.imshow("6 draqw", imgResize1)
+    cv2.waitKey()
 
 # Mostrar imágenes
 imgResize = cv2.resize(draw1, (1260, 860))
