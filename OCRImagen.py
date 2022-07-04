@@ -11,7 +11,7 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 
 
 
-img = cv2.imread('Imagenes/p6.jpeg', cv2.IMREAD_UNCHANGED)
+img = cv2.imread('Imagenes/p11.jpeg', cv2.IMREAD_UNCHANGED)
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 

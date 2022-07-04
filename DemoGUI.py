@@ -11,7 +11,8 @@ import os
 from pylibdmtx.pylibdmtx import decode
 
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
+pytesseract.pytesseract.\
+    tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 
 
 def fin():
@@ -114,7 +115,7 @@ def visualizar():
 
 def iniciar():
     global cap
-    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
     cap.set(3, 640)
     cap.set(4, 480)
     img = visualizar()

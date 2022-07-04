@@ -87,7 +87,7 @@ import numpy as np
 import imutils
 
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('autos.mp4')
 fgbg = cv2.createBackgroundSubtractorMOG2()
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 car_counter = 0
