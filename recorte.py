@@ -59,78 +59,10 @@ canny = cv2.dilate(canny, None, iterations=1)
 
 cnts, hierarchy = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-Lista = []
-
-def dataMat(recorte, bgr):
-    global code
-    # image = cv2.imread('Imagenes/p6.jpeg', cv2.IMREAD_UNCHANGED);
-    gray_img = cv2.cvtColor(recorte, cv2.COLOR_BGR2GRAY)
-    data = decode(gray_img)
-    # print(data)
-    # for decodedObject in data:
-    #     # points = decodedObject.rect
-    #     # pts = np.array(points, np.int32)
-    #     # pts = pts.reshape((-1, 1, 2))
-    #     # cv2.polylines(image, [pts], True, (0, 255, 0), 3)
-    #
-    #     cv2.putText(recorte, decodedObject.data.decode("utf-8") , (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1,bgr, 2)
-
-        # print("Barcode: {} ".format(decodedObject.data.decode("utf-8")))
-    for barcode in data:
-        # extract the bounding box location of the barcode and draw
-        # the bounding box surrounding the barcode on the image
-        x1, y1, w1, h1 = barcode.rect
-        print('barcode: ', x1, y1, w1, h1)
-        cv2.rectangle(recorte, (x1, w1), (x1+w1, w1+h1), (0, 255, 0), 2)
-        print('x1:',x1, 'y1:',w1)
-        print ('x1 + w1',x1 + w1,'w1+h1: ', w1+h1)
-        # cv2.putText(recorte, str(barcode), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, bgr, 2)
-        cv2.imshow("recorte con OCR", recorte)
-        cv2.waitKey(0)
-        # print(barcode)
-        # print(len(barcode))
-
-
-def ocr():
-    print('holaaa')
-
-for c in cnts:
-    # epsilon = 0.01 * cv2.arcLength(c, True)
-    # approx = cv2.approxPolyDP(c, epsilon, True)
-    # area2 = cv2.contourArea(c)
-
-    x, y, w, h = cv2.boundingRect(c)
-
-
-    if  x != 0 and y != 0:
-        # print(x, y, w, h)
-        recorte = draw1[y:y+h, x:x+w]# y:y+h, x:x+w
-        imgResize = cv2.resize(draw1, (1260, 860))
-        boxes = pytesseract.image_to_data(recorte)
-        for a, b in enumerate(boxes.splitlines()):
-             # print(b)
-            if a != 0:
-                b = b.split()
-                print(b)
-                 # if len(b)==12 and (b[11] == '202702' or b[11] == '820022' or  b[11] == '|T27-7YS' or b[11] == 'Integron®') :
-                if len(b) == 12 and (b[11] == 'Integron®' or  b[11] == '|T27-7YS'):
-                    x, y, w, h = int(b[6]), int(b[7]), int(b[8]), int(b[9])
-                    cv2.putText(recorte, b[11], (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 50, 255), 2)
-                    cv2.rectangle(recorte , (x, y), (x + w, y + h), (50, 50, 255), 2)
-        bgr = (0,255,0)
-
-        #cv2.imshow("recorte con OCR", recorte)
-        # code = dataMat(recorte, bgr)
 
         #cv2.waitKey(0)
 
 
 
-                        # recorte = draw1[692:895, 665:1289] #y:y+h, x:x+w
 
-
-# Mostrar imágenes
-imgResize = cv2.resize(draw1,(800,600))
-cv2.imshow("draw1", imgResize)
-cv2.waitKey(0)
 cv2.destroyWindow()
