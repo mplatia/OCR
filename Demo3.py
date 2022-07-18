@@ -27,7 +27,7 @@ def dataMat(image, bgr):
 
 bgr = (0, 255, 0)
 
-frame = cv2.imread('Imagenes/bp.png')#CAP
+frame = cv2.imread('Imagenes/p11.jpeg')#CAP
 code = dataMat(frame, bgr)
 # print(code)
 imgr = cv2.resize(frame, (800, 600))
