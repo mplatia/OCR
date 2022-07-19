@@ -24,11 +24,12 @@ for c in cnts:
     # if area2 > 104000:
     if area2 > 6500 and area2 < 8000:
         if len(approx) == 4:
-            # cv2.drawContours(img, [approx], 0, (0, 0, 255), 2)
+            cv2.drawContours(img, [approx], 0, (0, 0, 255), 2)
             x, y, w, h = cv2.boundingRect(c)
-            # cv2.rectangle(img, (x- 265, y - 100), (x + w + 230, y + h + 8), (0, 0, 0), 2, cv2.LINE_AA)
+            #cv2.rectangle(img, (x- 265, y - 100), (x + w + 230, y + h + 8), (0, 0, 0), 2, cv2.LINE_AA)
             l1v = cv2.line(img, (x - 265, y - 100), (x -265, y + h + 20), (0, 0, 0), 8)
             l1h = cv2.line(img, (x - 265 , y + 100), (x + 320, y + 100), (0, 0, 0), 8)
+
 
 
 gray2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -54,6 +55,7 @@ for c1 in cnts1:
 
 
 
+
 # for i, j in zip(contours1, range(len(contours1))):
 #     M = cv2.moments(i)
 #     cX = int(M["m10"] / M["m00"])
@@ -67,8 +69,12 @@ for c1 in cnts1:
 contador = 0
 for xr, yr, wr, hr in myContours:
     recorte = img[yr:yr + hr, xr:xr + wr]
-    # cv2.rectangle(img, (xr, yr), (xr + wr, yr + hr), (0, 255, 0), 5)
+    cv2.rectangle(img, (xr, yr), (xr + wr, yr + hr), (0, 255, 0), 5)
     contador += 1
+    imgResizei = cv2.resize(img, (1200, 800))
+    cv2.imshow("w", imgResizei)
+    cv2.waitKey(0)
+
     model = cv2.dnn.readNet(r'C:\Users\Maxi\Desktop\proyectosCV\CursoOCR\frozen_east_text_detection.pb')
     # cv2.rectangle(img,(xr,yr),(xr+wr,yr+hr),(0,255,0),5)
 
@@ -140,8 +146,7 @@ for xr, yr, wr, hr in myContours:
                         cv2.rectangle(img_copy, (x1, y1), (x1 + w1, y1 + h1), (0, 255, 0), 2)
 
                         cv2.putText(img_copy, br[11], (x1, y1 + 30), cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 0, 255), 2)
-                        cv2.imshow("w7", img_copy)
-                        cv2.waitKey(0)
+
 
 
 

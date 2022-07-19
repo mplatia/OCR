@@ -36,7 +36,7 @@ for c in cnts:
 
         print(r, g, b)
         cv2.drawContours(image, [approx], 0, (0,0,0),5)
-        imgResizei = cv2.resize(recorte, (1600, 800))
+        imgResizei = cv2.resize(recorte, (800, 400))
         cv2.imshow('image',imgResizei)
         cv2.waitKey(0)
 
