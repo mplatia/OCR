@@ -39,14 +39,14 @@ for c in cnts:
 
             print('este es cont antes del if', cont)
             print('antes del if', puntos)
-            if contador == cont:
+            if contador == cont or contador == 1 or contador == 5 or contador == 85 or contador == 90:
 
                 print('adentro del if', pun)
                 print('este es cont', cont)
                 cv2.drawContours(img, [approx], 0, (0, 0, 255), 2)
                 imgResizei = cv2.resize(img, (1024, 600))
                 cv2.imshow("wfb", imgResizei)
-                cont = cont + 6
+                cont = cont + 5
                 cv2.waitKey(0)
 
 
