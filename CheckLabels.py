@@ -16,6 +16,8 @@ cnts, hierarchy = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NO
 
 contador = 0
 puntos =[]
+pun = []
+cont = 6
 for c in cnts:
     epsilon = 0.01 * cv2.arcLength(c, True)
     approx = cv2.approxPolyDP(c, epsilon, True)
@@ -23,16 +25,32 @@ for c in cnts:
     # if area2 > 104000:
     if area2 > 6500 and area2 < 8000:
         if len(approx) == 4:
-            # cv2.drawContours(img, [approx], 0, (0, 0, 255), 2)
+            #cv2.drawContours(img, [approx], 0, (0, 0, 255), 2)
             x, y, w, h = cv2.boundingRect(c)
-            contador = contador + 1
             r=265
-            #cv2.rectangle(img, (x- 265, y - 100), (x + w + 230, y + h + 8), (0, 0, 0), 2, cv2.LINE_AA)
-            puntos.append(( x, y, w, h, contador))
-            #print(contador)
-            if contador == 6:
-                puntos.sort(key=lambda r: r[0])
-                print(puntos)
+            # cv2.rectangle(img, (x- 265, y - 100), (x + w + 230, y + h + 8), (0, 0, 0), 2, cv2.LINE_AA)
+            contador = contador + 1
+            puntos.append((x, y, w, h, contador))
+            print('antes del sort', puntos)
+            #puntos.sort(key=lambda r: r[0])
+            punt = sorted(puntos, key=lambda r: r[0])
+
+            pun.append(punt)
+
+            print('este es cont antes del if', cont)
+            print('antes del if', puntos)
+            if contador == cont:
+
+                print('adentro del if', pun)
+                print('este es cont', cont)
+                cv2.drawContours(img, [approx], 0, (0, 0, 255), 2)
+                imgResizei = cv2.resize(img, (1024, 600))
+                cv2.imshow("wfb", imgResizei)
+                cont = cont + 6
+                cv2.waitKey(0)
+
+
+
 
 
 #imgResizei = cv2.resize(img , (800, 600))

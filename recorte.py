@@ -5,7 +5,8 @@ from pylibdmtx.pylibdmtx import decode
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 
-img = cv2.imread(r'Imagenes/p11.jpeg', 1)  # Leer imagen
+img = cv2.imread(r'Imagenes/p11'
+                 r'.jpeg', 1)  # Leer imagen
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convierta la imagen en una imagen en escala de grises
 kernel = np.ones((4, 4), np.uint8)  # Kelner
 erosion = cv2.erode(gray, kernel, iterations=2)  # Expansión
@@ -34,8 +35,7 @@ for i, j in zip(contours1, range(len(contours1))):
 
     # if cX == 1308 or cY == 1017:
     if cX == 1354 or cY == 950:
-        draw = cv2.drawContours(img, contours1, -1, (0, 0, 0), 2)
-        draw1 = cv2.putText(draw, ('este es el punto' + str(j)), (cX, cY), 1, 1.5, (0, 0, 255), 2)
+        draw1 = cv2.putText(img, ('este es el punto' + str(j)), (cX, cY), 1, 1.5, (0, 0, 255), 2)
 
         # l1v = cv2.line(img, (cX, 0), (cX, cY), (0, 0, 0), 4)
         # l1h = cv2.line(img, (0, cY), (cX, cY), (0, 0, 255), 4)
@@ -59,10 +59,73 @@ canny = cv2.dilate(canny, None, iterations=1)
 
 cnts, hierarchy = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+Lista = []
 
-        #cv2.waitKey(0)
+def dataMat(image, bgr):
+    global recorte
+    global code
+    # image = cv2.imread('Imagenes/p6.jpeg', cv2.IMREAD_UNCHANGED);
+    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    data = decode(gray_img)
+    # print(data)
+    for decodedObject in data:
+        points = decodedObject.rect
+        pts = np.array(points, np.int32)
+        pts = pts.reshape((-1, 1, 2))
+        # cv2.polylines(image, [pts], True, (0, 255, 0), 3)
+
+        cv2.putText(recorte, decodedObject.data.decode("utf-8") , (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1,bgr, 2)
+
+        # print("Barcode: {} ".format(decodedObject.data.decode("utf-8")))
+        for barcode in data:
+            # extract the bounding box location of the barcode and draw
+            # the bounding box surrounding the barcode on the image
+            x1, y1, w1, h1 = barcode.rect
+            cv2.rectangle(recorte, (x1, y1), (x1 + w1, y1 - h1), (0, 255, 0), 2)
+            # cv2.putText(recorte, str(barcode), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, bgr, 2)
+            cv2.imshow("recorte con OCR", recorte)
+            code = cv2.waitKey(0)
+            print(barcode)
+            # print(len(barcode))
+
+
+for c in cnts:
+    epsilon = 0.01 * cv2.arcLength(c, True)
+    approx = cv2.approxPolyDP(c, epsilon, True)
+    area2 = cv2.contourArea(c)
+
+    x, y, w, h = cv2.boundingRect(c)
+
+
+    if  x != 0 and y != 0:
+        print(x, y, w, h)
+        recorte = draw1[y:y+h, x:x+w]# y:y+h, x:x+w
+        imgResize = cv2.resize(draw1, (1260, 860))
+        boxes = pytesseract.image_to_data(recorte)
+        for a, b in enumerate(boxes.splitlines()):
+            # print(b)
+            if a != 0:
+                b = b.split()
+                print(b)
+                # ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+                # msg = pylibdmtx.decode(thresh)
+                # print(msg)
+
+                # if len(b)==12 and (b[11] == '202702' or b[11] == '820022' or  b[11] == '|T27-7YS' or b[11] == 'Integron®') :
+                if len(b) == 12:
+                    x, y, w, h = int(b[6]), int(b[7]), int(b[8]), int(b[9])
+                    cv2.putText(recorte, b[11], (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (50, 50, 255), 2)
+                    cv2.rectangle(recorte , (x, y), (x + w, y + h), (50, 50, 255), 2)
+                    bgr = (0,255,0)
+
+                    #cv2.imshow("recorte con OCR", recorte)
+                    code = dataMat(recorte, bgr)
+                    #cv2.waitKey(0)
 
 
 
+                        # recorte = draw1[692:895, 665:1289] #y:y+h, x:x+w
 
+
+# Mostrar imágenes
 cv2.destroyWindow()
